@@ -125,7 +125,7 @@ static uint32_t syscall(uint32_t id, uint32_t param) {
 }
 ```
 
-The [RISC-V SBI] is not followed (https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc), a simpler approach is taken.
+The [RISC-V SBI](https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc) is not followed, a simpler approach is taken.
 
 ## syscalls
 
