@@ -167,7 +167,6 @@ uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) 
                     }
                     // no mapping found
                     if (!syscall_valid) {
-printf("BADSYS %08x halt=%08x YIELD=%08x\n", syscall, UVM32_SYSCALL_HALT, UVM32_SYSCALL_YIELD);
                         setStatusErr(vmst, UVM32_ERR_BAD_SYSCALL);
                     }
                 break;
