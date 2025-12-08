@@ -26,10 +26,10 @@ fn mandel() void {
                 y2 = (y * y) >> 12;
                 uvm.yield();
             }
-            uvm.printc(' ' + @as(u8, @intCast(iter)));
+            uvm.putc(' ' + @as(u8, @intCast(iter)));
             cx += dx;
         }
-        uvm.printc('\n');
+        uvm.putc('\n');
         cy += dy;
     }
 }

@@ -14,7 +14,7 @@ pub inline fn syscall(id: u32, param: u32) u32 {
     return val;
 }
 
-pub inline fn getch() ?u8 {
+pub inline fn getc() ?u8 {
     const key = syscall(uvm32.UVM32_SYSCALL_GETC, 0);
     if (key == 0xFFFFFFFF) {
         return null;
@@ -49,7 +49,7 @@ pub inline fn yield() void {
     _ = syscall(uvm32.UVM32_SYSCALL_YIELD, 0);
 }
 
-pub inline fn printc(c:u8) void {
-    _ = syscall(uvm32.UVM32_SYSCALL_PRINTC, c);
+pub inline fn putc(c:u8) void {
+    _ = syscall(uvm32.UVM32_SYSCALL_PUTC, c);
 }
 

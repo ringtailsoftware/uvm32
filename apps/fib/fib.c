@@ -11,11 +11,11 @@ void printFib(int n) {
             int curr = prev1 + prev2;
             prev2 = prev1;
             prev1 = curr;
-            printd(curr);
+            printdec(curr);
         } else if (i == 1) {
-            printd(prev2);
+            printdec(prev2);
         } else if (i == 2) {
-            printd(prev1);
+            printdec(prev1);
         }
     }
 }
@@ -27,14 +27,14 @@ void fib_recursive(int n, int prev1, int prev2) {
     }
     
     int curr = prev1 + prev2;
-    printd(curr);
+    printdec(curr);
   
     return fib_recursive(n - 1, prev2, curr);
 }
 
 void printFibRec(int n) {
-    printd(0);
-    printd(1);
+    printdec(0);
+    printdec(1);
     fib_recursive(n, 0, 1);
 }
 

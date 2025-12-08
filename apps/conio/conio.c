@@ -7,7 +7,7 @@ void main(void) {
     while(c = getc()) {
         if (c != 0xFFFFFFFF) {
             print("Got: ");
-            printx(c);
+            printhex(c);
             println("");
         }
     }

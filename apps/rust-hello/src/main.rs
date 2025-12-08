@@ -28,14 +28,14 @@ fn println(message: &str) {
     syscall(UVM32_SYSCALL_PRINTLN, addr_value);
 }
 
-fn printd(n: u32) {
-    syscall(UVM32_SYSCALL_PRINTD, n);
+fn printdec(n: u32) {
+    syscall(UVM32_SYSCALL_PRINTDEC, n);
 }
 
 #[no_mangle]
 pub extern "C" fn main() {
     for i in 0..10 {
-        printd(i);
+        printdec(i);
     }
     println("Hello, world!\0");
 }

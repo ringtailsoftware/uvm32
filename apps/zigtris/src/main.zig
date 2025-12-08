@@ -18,7 +18,7 @@ export fn main() void {
 
     while(gameRunning) {
         const now = uvm.millis();
-        if (uvm.getch()) |key| {
+        if (uvm.getc()) |key| {
             switch(key) {
                 ' ' => nextEvent = mibu.events.Event{.key = .{.code = .{.char = ' '}}},
                 'a' => nextEvent = mibu.events.Event{.key = .{.code = .left}},

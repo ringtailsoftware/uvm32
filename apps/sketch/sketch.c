@@ -3,7 +3,7 @@
 uint32_t count;
 
 bool loop(void) {
-    printd(count);
+    printdec(count);
     if (count++ >= 10) {
         return false;
     } else {

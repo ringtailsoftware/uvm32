@@ -22,7 +22,7 @@ pub inline fn yield() void {
     _ = syscall(uvm32.UVM32_SYSCALL_YIELD, 0);
 }
 
-pub inline fn printc(c:u8) void {
-    _ = syscall(uvm32.UVM32_SYSCALL_PRINTC, c);
+pub inline fn putc(c:u8) void {
+    _ = syscall(uvm32.UVM32_SYSCALL_PUTC, c);
 }
 

@@ -15,9 +15,9 @@ static struct termios orig_termios;
 // syscalls exposed to vm environement
 typedef enum {
     F_PRINT,
-    F_PRINTD,
-    F_PRINTX,
-    F_PRINTC,
+    F_PRINTDEC,
+    F_PRINTHEX,
+    F_PUTC,
     F_PRINTLN,
     F_MILLIS,
     F_GETC,
@@ -27,9 +27,9 @@ typedef enum {
 const uvm32_mapping_t env[] = {
     { .syscall = UVM32_SYSCALL_PRINTLN, .typ = UVM32_SYSCALL_TYP_BUF_TERMINATED_WR, .code = F_PRINTLN },
     { .syscall = UVM32_SYSCALL_PRINT, .typ = UVM32_SYSCALL_TYP_BUF_TERMINATED_WR, .code = F_PRINT },
-    { .syscall = UVM32_SYSCALL_PRINTD, .typ = UVM32_SYSCALL_TYP_U32_WR, .code = F_PRINTD },
-    { .syscall = UVM32_SYSCALL_PRINTX, .typ = UVM32_SYSCALL_TYP_U32_WR, .code = F_PRINTX },
-    { .syscall = UVM32_SYSCALL_PRINTC, .typ = UVM32_SYSCALL_TYP_U32_WR, .code = F_PRINTC },
+    { .syscall = UVM32_SYSCALL_PRINTDEC, .typ = UVM32_SYSCALL_TYP_U32_WR, .code = F_PRINTDEC },
+    { .syscall = UVM32_SYSCALL_PRINTHEX, .typ = UVM32_SYSCALL_TYP_U32_WR, .code = F_PRINTHEX },
+    { .syscall = UVM32_SYSCALL_PUTC, .typ = UVM32_SYSCALL_TYP_U32_WR, .code = F_PUTC },
     { .syscall = UVM32_SYSCALL_MILLIS, .typ = UVM32_SYSCALL_TYP_U32_RD, .code = F_MILLIS },
     { .syscall = UVM32_SYSCALL_GETC, .typ = UVM32_SYSCALL_TYP_U32_RD, .code = F_GETC },
 };
@@ -189,13 +189,13 @@ int main(int argc, char *argv[]) {
                     case F_PRINTLN:
                         printf("%.*s\n", evt.data.syscall.val.buf.len, evt.data.syscall.val.buf.ptr);
                     break;
-                    case F_PRINTD:
+                    case F_PRINTDEC:
                         printf("%d\n", evt.data.syscall.val.u32);
                     break;
-                    case F_PRINTC:
+                    case F_PUTC:
                         printf("%c", evt.data.syscall.val.u32);
                     break;
-                    case F_PRINTX:
+                    case F_PRINTHEX:
                         printf("%08x", evt.data.syscall.val.u32);
                     break;
                     case F_GETC: {

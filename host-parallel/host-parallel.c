@@ -23,12 +23,12 @@ uint8_t rom[] = {
 
 // Create an identifier for our host handler
 typedef enum {
-    F_PRINTD,
+    F_PRINTDEC,
 } f_code_t;
 
-// Map VM syscall UVM32_SYSCALL_PRINTD to F_PRINTD, tell VM to expect write of a U32
+// Map VM syscall UVM32_SYSCALL_PRINTDEC to F_PRINTDEC, tell VM to expect write of a U32
 const uvm32_mapping_t env[] = {
-    { .syscall = UVM32_SYSCALL_PRINTD, .typ = UVM32_SYSCALL_TYP_U32_WR, .code = F_PRINTD },
+    { .syscall = UVM32_SYSCALL_PRINTDEC, .typ = UVM32_SYSCALL_TYP_U32_WR, .code = F_PRINTDEC },
 };
 
 int main(int argc, char *argv[]) {
@@ -57,8 +57,8 @@ int main(int argc, char *argv[]) {
             break;
             case UVM32_EVT_SYSCALL:    // vm has paused to handle UVM32_SYSCALL
                 switch((f_code_t)evt.data.syscall.code) {
-                    case F_PRINTD:
-                        // Type of F_PRINTD is UVM32_SYSCALL_TYP_U32_WR, so expect value in evt.data.syscall.val.u32
+                    case F_PRINTDEC:
+                        // Type of F_PRINTDEC is UVM32_SYSCALL_TYP_U32_WR, so expect value in evt.data.syscall.val.u32
                         printf("[VM %d]: %d\n", scheduler_index, evt.data.syscall.val.u32);
                     break;
                 }
