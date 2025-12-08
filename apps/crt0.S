@@ -7,7 +7,7 @@ _start:
 sw	ra,12(sp)
 jal	ra, main
 #if 1
-#include "non-rust-crt0-hack.s"
+#include "non-rust-crt0-hack.S"
 #else
 li a7, {IOREQ_HALT}
 #endif
