@@ -72,7 +72,7 @@ typedef struct {
 } uvm32_state_t;
 
 void uvm32_init(uvm32_state_t *vmst);
-bool uvm32_load(uvm32_state_t *vmst, uint8_t *rom, int len);
+bool uvm32_load(uvm32_state_t *vmst, const uint8_t *rom, int len);
 bool uvm32_hasEnded(const uvm32_state_t *vmst);
 uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter);
 

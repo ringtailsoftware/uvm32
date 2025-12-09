@@ -77,7 +77,7 @@ void uvm32_init(uvm32_state_t *vmst) {
     vmst->core.extraflags |= 3;  // Machine-mode.
 }
 
-bool uvm32_load(uvm32_state_t *vmst, uint8_t *rom, int len) {
+bool uvm32_load(uvm32_state_t *vmst, const uint8_t *rom, int len) {
     if (len > UVM32_MEMORY_SIZE) {
         // too big
         return false;
