@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <termios.h>
+#include <signal.h>
 #include "uvm32.h"
 
 #include "../common/uvm32_common_custom.h"
@@ -40,9 +41,15 @@ void disableRawMode(void) {
     fflush(stdout);
 }
 
+void cleanexit(int sig) {
+    disableRawMode();
+    exit(0);
+}
+
 void enableRawMode(void) {
     tcgetattr(STDIN_FILENO, &orig_termios);
     atexit(disableRawMode);
+    sigset(SIGINT, cleanexit);
     struct termios raw = orig_termios;
     raw.c_lflag &= ~(ECHO | ICANON | IEXTEN);
     raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
@@ -116,6 +123,7 @@ bool poll_getch(uint8_t* c) {
 
         if (len) {
             if (*c == 0x03 || *c == 0x04) {   // ctrl-c ctrl-d
+                disableRawMode();
                 exit(0);
             }
             if (*c == 0x0d) {
