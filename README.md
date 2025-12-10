@@ -140,7 +140,6 @@ If the bytecode attempts to execute more instructions than the the passed value 
 
 * `UVM32_EVT_END` the program has ended
 * `UVM32_EVT_ERR` the program has encountered an error
-* `UVM32_EVT_YIELD` the program has called `yield()` signifying that it requires more instructions to be executed, but has not crashed/hung
 * `UVM32_EVT_SYSCALL` the program requests some IO via the host
 
 ## Internals
@@ -190,9 +189,9 @@ The [RISC-V SBI](https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/risc
 
 ## syscalls
 
-There are two system syscalls used by uvm32, `halt()` and `yield()`.
+There are two inbuilt syscalls used by uvm32, `halt()` and `yield()`.
 
-`halt()` tells the host that the program has ended normally. `yield()` tells the host that the program requires more instructions to be executed. These are handled internally to uvm32.
+`halt()` tells the host that the program has ended normally. `yield()` tells the host that the program requires more instructions to be executed. Halt is handled internally and transitions the VM to `UVM32_STATUS_ENDED`, `yield()` is handled in the VM host like other syscalls. 
 
 Syscalls are handled in the host by reading the syscall identifier, then using the provided functions to get arguments and set a return response. Direct access to the VM's memory space is not allowed, to avoid memory corruption issues.
 
