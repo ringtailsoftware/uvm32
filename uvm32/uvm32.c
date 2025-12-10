@@ -74,7 +74,7 @@ void uvm32_init(uvm32_state_t *vmst) {
     // setup stack pointer
     // la	sp, _sstack
     // addi	sp,sp,-16
-    vmst->core.regs[2] = (MINIRV32_RAM_IMAGE_OFFSET + UVM32_MEMORY_SIZE) - 16;
+    vmst->core.regs[2] = ((MINIRV32_RAM_IMAGE_OFFSET + UVM32_MEMORY_SIZE) & ~0xF) - 16; // 16 byte align stack
     vmst->core.regs[10] = 0x00;  //hart ID
     vmst->core.regs[11] = 0;
     vmst->core.extraflags |= 3;  // Machine-mode.
@@ -190,6 +190,7 @@ uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) 
 
                             // check data fits in ram
                             if (mem_offset > UVM32_MEMORY_SIZE) {
+
                                 setStatusErr(vmst, UVM32_ERR_INTERNAL_CORE);
                                 setup_err_evt(vmst, evt);
                             }
@@ -212,6 +213,10 @@ uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) 
                     break;
                 }   // end switch(syscall)
             } break; // end ecall
+            case 6:
+                setStatusErr(vmst, UVM32_ERR_MEM_RD);
+                setup_err_evt(vmst, evt);
+            break;
             default:
                 // unhandled exception
                 setStatusErr(vmst, UVM32_ERR_INTERNAL_CORE);
