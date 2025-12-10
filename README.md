@@ -99,24 +99,20 @@ int main(int argc, char *argv[]) {
  * [apps/zig-mandel](apps/zig-mandel) Zig ASCII mandelbrot generator program
  * [apps/zigtris](apps/zigtris) Zig Tetris (https://github.com/ringtailsoftware/zigtris)
 
-## Quickstart
+## Quickstart (docker)
+
+    make dockerbuild
+    make dockershell
+
+Then, from inside the docker shell
 
     make
-    host/host precompiled/mandel.bin
-    host/host precompiled/zigtris.bin
 
-Build sample apps (sets up docker for cross compiler)
+    ./host/host apps/helloworld/helloworld.bin
 
-    cd apps
-    make
+## Native build
 
-Build one of the sample apps (requires docker for C, or Zig, or Rust)
-
-	cd apps/helloworld && make
-	
-Run the app
-
-	./host ../apps/helloworld/helloworld.bin
+The example VM hosts should all build with any C compiler. To build all of the examples in `apps`, you will need a RISC-V cross compiler, Zig 0.15.2 and Rust (stable).
 
 ## Quickstart API
 
@@ -259,10 +255,10 @@ The uvm32 memory size is set at compile time with `-DUVM32_MEMORY_SIZE=X` (in by
 
 ## Debugging
 
-The `Makefile` in `apps` builds a docker container with a RISC-V toolchain. This can be used to disassemble with:
+Binaries can be disassembled with
 
-    docker run -v `pwd`:/data -w /data --rm riscv-dev riscv64-unknown-elf-objdump -d -f hello-asm.elf
-    docker run -v `pwd`:/data -w /data --rm riscv-dev riscv64-unknown-elf-objdump -S -d -b binary -m riscv:rv32 -D -M no-aliases -f hello-asm.bin
+    riscv64-elf-objdump -d -f hello-asm.elf
+    riscv64-elf-objdump -S -d -b binary -m riscv:rv32 -D -M no-aliases -f hello-asm.bin
 
 ## License
 

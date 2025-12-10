@@ -1,36 +1,15 @@
+#ifndef UVM32_TARGET_H
+#define UVM32_TARGET_H
 // Common to all target code
 
 #include "uvm32_sys.h"
+#include <stdbool.h>
+//// <stdbool>
+////typedef unsigned char bool;
+//#define true 1
+//#define false 0
 
-// <stdint>
-typedef unsigned long long uint64_t;
-typedef unsigned long uint32_t;
-typedef unsigned short uint16_t;
-typedef unsigned char uint8_t;
-typedef signed long long int64_t;
-typedef signed long int32_t;
-typedef signed short int16_t;
-typedef signed char int8_t;
-
-// <stdbool>
-typedef unsigned char bool;
-#define true 1
-#define false 0
-
-#ifndef size_assert
-#define size_assert( what, howmuch ) \
-  typedef char what##_size_wrong_[( !!(sizeof(what) == howmuch) )*2-1 ]
-#endif
-
-// sanity check
-size_assert(uint64_t, 8);
-size_assert(uint32_t, 4);
-size_assert(uint16_t, 2);
-size_assert(uint8_t, 1);
-size_assert(int64_t, 8);
-size_assert(int32_t, 4);
-size_assert(int16_t, 2);
-size_assert(int8_t, 1);
+#include "target-stdint.h"
 
 static uint32_t syscall(uint32_t id, uint32_t param1, uint32_t param2) {
     register uint32_t a0 asm("a0") = (uint32_t)(param1);
@@ -66,4 +45,6 @@ static void stackprotect(void) {
 }
 
 #include "uvm32_common_custom.h"
+
+#endif
 

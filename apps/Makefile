@@ -1,7 +1,4 @@
-DOCKER_IMAGE=riscv-dev
-
 all:
-	docker build -t ${DOCKER_IMAGE} .
 	(cd sketch && make)
 	(cd helloworld && make)
 	(cd lissajous && make)

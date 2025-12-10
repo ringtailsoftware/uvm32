@@ -1,8 +1,13 @@
 #ifndef UVM32_H
 #define UVM32_H 1
 
+#ifndef CUSTOM_STDLIB_H
 #include <stdint.h>
 #include <stdbool.h>
+#else
+#include CUSTOM_STDLIB_H
+#endif
+
 #include "uvm32_sys.h"
 
 #define LIST_OF_UVM32_ERRS \

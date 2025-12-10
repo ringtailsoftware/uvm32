@@ -14,6 +14,6 @@ jobs:
         with:
           path: uvm32
       - name: Build
-        run: make
+        run: make dockerbuild && make docker
         working-directory: uvm32
 

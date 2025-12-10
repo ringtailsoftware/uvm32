@@ -1,8 +1,13 @@
+PROJECT=rust-hello
+TOPDIR=../../
+
 all:
-	cargo build -r --target riscv32im-unknown-none-elf && docker run -v `pwd`:/data -w /data --rm riscv-dev riscv64-unknown-elf-objcopy target/riscv32im-unknown-none-elf/release/rust-hello -O binary rust-hello.bin
+	cargo build -r --target riscv32im-unknown-none-elf && ${PREFIX}objcopy target/riscv32im-unknown-none-elf/release/${PROJECT} -O binary ${PROJECT}.bin
+
+clean: clean_common
+	rm -rf target
 
 test: all
-	../../host/host rust-hello.bin
+	${TOPDIR}/host/host ${PROJECT}.bin
 
-clean:
-	rm -rf rust-hello.bin target
+include ${TOPDIR}/apps/makefile.common
