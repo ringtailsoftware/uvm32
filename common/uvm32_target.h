@@ -59,5 +59,11 @@ static uint32_t syscall(uint32_t id, uint32_t param1, uint32_t param2) {
 #define yield()         syscall_cast(UVM32_SYSCALL_YIELD, 0, 0)
 #define printbuf(x, y)  syscall_cast(UVM32_SYSCALL_PRINTBUF, x, y)
 
+extern char _estack;
+
+static void stackprotect(void) {
+    syscall_cast(UVM32_SYSCALL_STACKPROTECT, &_estack, 0);
+}
+
 #include "uvm32_common_custom.h"
 

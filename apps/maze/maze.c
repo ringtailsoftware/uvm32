@@ -78,6 +78,7 @@ void print_maze() {
     }
 }
 
+
 void main(void) {
     init_maze();
     carve(1, 1);

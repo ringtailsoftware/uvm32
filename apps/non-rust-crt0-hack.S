@@ -1,1 +1,0 @@
-li a7,UVM32_SYSCALL_HALT

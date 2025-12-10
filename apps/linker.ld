@@ -78,8 +78,9 @@ SECTIONS
 		_sstack = .;
 	}
 */
-/*		_sstack = .;*/
-
+	.stack : ALIGN( 16 ) {
+		_estack = .;
+	}
 }
 
 

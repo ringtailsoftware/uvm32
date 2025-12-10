@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
                         printf("%c", uvm32_getval(&vmst, &evt, ARG0));
                     break;
                     case UVM32_SYSCALL_PRINTHEX:
-                        printf("%d", uvm32_getval(&vmst, &evt, ARG0));
+                        printf("%08x", uvm32_getval(&vmst, &evt, ARG0));
                     break;
                     case UVM32_SYSCALL_MILLIS: {
                         clock_t now = clock() / (CLOCKS_PER_SEC / 1000);

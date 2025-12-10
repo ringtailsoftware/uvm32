@@ -15,6 +15,7 @@
     X(UVM32_ERR_INTERNAL_CORE) \
     X(UVM32_ERR_INTERNAL_STATE) \
     X(UVM32_ERR_ARGS) \
+    X(UVM32_ERR_STACKOVERFLOW) \
 
 #define X(name) name,
 typedef enum {
@@ -69,6 +70,7 @@ typedef struct {
     struct MiniRV32IMAState core;
     uint8_t memory[UVM32_MEMORY_SIZE];
     uvm32_evt_t ioevt; // for building up in callbacks
+    uint8_t *stack_canary;
 } uvm32_state_t;
 
 void uvm32_init(uvm32_state_t *vmst);
