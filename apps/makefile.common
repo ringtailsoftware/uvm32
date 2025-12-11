@@ -1,7 +1,7 @@
 PREFIX:=riscv64-elf-
 OPT ?= -Os
 CFLAGS+=-I${TOPDIR}/common
-CFLAGS+=-fno-stack-protector
+CFLAGS+=-fno-stack-protector -fno-builtin-memcpy -fno-builtin
 CFLAGS+=-static-libgcc -fdata-sections -ffunction-sections
 CFLAGS+=-g ${OPT} -march=rv32im -mabi=ilp32 -static
 LDFLAGS:= -T ${TOPDIR}/apps/linker.ld -nostdlib -Wl,--gc-sections

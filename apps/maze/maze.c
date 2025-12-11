@@ -8,16 +8,7 @@
 
 char maze[HEIGHT * WIDTH];
 
-void* memcpy(void* dst, const void* src, int len) {
-    uint8_t* d = (uint8_t*)dst;
-    const uint8_t* s = (const uint8_t*)src;
-    while (len--) {
-        *(d++) = *(s++);
-    }
-    return dst;
-}
-
-void* memset(void* buf, int c, int len) {
+void* my_memset(void* buf, int c, int len) {
     uint8_t* b = (uint8_t*)buf;
     while (len--) {
         *(b++) = c;
@@ -28,18 +19,17 @@ void* memset(void* buf, int c, int len) {
 int dx[] = {0, 1, 0, -1};
 int dy[] = {-1, 0, 1, 0};
 
-int seed = 123456789;
+uint32_t state = 0x1;
 
-int rand() {
-    uint32_t a = 1103515245;
-    uint32_t c = 12345;
-    uint32_t m = 0xFFFFFFFF;
-    seed = (a * seed + c) % m;
-    return seed;
+int32_t mulberry32(void) {
+  uint32_t z = (state += 0x6D2B79F5UL);
+  z = (z ^ (z >> 15)) * (z | 1UL);
+  z ^= z + (z ^ (z >> 7)) * (z | 61UL);
+  return z ^ (z >> 14);
 }
 
 void init_maze() {
-    memset(maze, '#', sizeof(maze));
+    my_memset(maze, '#', sizeof(maze));
 }
 
 int in_bounds(int x, int y) {
@@ -52,7 +42,7 @@ void carve(int x, int y) {
     int dirs[] = {0, 1, 2, 3};
     // Fisher-Yates shuffle
     for (int i = 3; i > 0; i--) {
-        int j = rand() % (i + 1);
+        int j = mulberry32() % (i + 1);
         int tmp = dirs[i];
         dirs[i] = dirs[j];
         dirs[j] = tmp;
