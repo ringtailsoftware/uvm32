@@ -167,6 +167,23 @@ stateDiagram
 
 At boot, the whole memory is zeroed. The user program is placed at the start. The stack pointer is set to the end of memory and grows downwards. No heap region is setup and all code is in RAM.
 
+## ExtRAM
+
+A single block of external RAM may be memory mapped into the VM at any time using:
+
+    uvm32_extram(uvm32_state_t *vmst, uint32_t *ram, uint32_t len)
+
+The `ram` region must be 32bit aligned, as all accesses will be 32bit words. The `len` is given in bytes.
+
+From inside the VM, the memory is available from address `0x10000000`
+
+    uint32_t *p = (uint32_t *)UVM32_EXTRAM_BASE;
+    p[0] = 0xDEADBEEF;
+
+When the external RAM is written to by the VM, the dirty flag will be set. The flag is automatically cleared on the next call to `uvm32_run()`. The flag can be checked using:
+
+    bool uvm32_extramDirty(uvm32_state_t *vmst)
+
 ## syscall ABI
 
 All communication between bytecode and the vm host is performed via syscalls.

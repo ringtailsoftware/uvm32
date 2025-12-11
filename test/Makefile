@@ -3,7 +3,8 @@ TESTS = \
     stackoverflow   \
     custom_syscall  \
     syscall_args \
-    meter
+    meter \
+    extram
 
 RUNCMD = $(foreach TEST,${TESTS},make -C ${TEST} &&)
 CLEANCMD = $(foreach TEST,${TESTS},make -C ${TEST} clean &&)

@@ -69,6 +69,10 @@ void uvm32_init(uvm32_state_t *vmst) {
     UVM32_MEMSET(vmst, 0x00, sizeof(uvm32_state_t));
     vmst->status = UVM32_STATUS_PAUSED;
 
+    vmst->extramLen = 0;
+    vmst->extram = UVM32_NULL;
+    vmst->extramDirty = false;
+
     vmst->core.pc = MINIRV32_RAM_IMAGE_OFFSET;
     // https://projectf.io/posts/riscv-cheat-sheet/
     // setup stack pointer
@@ -140,6 +144,8 @@ void uvm32_clearError(uvm32_state_t *vmst) {
 uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) {
     const uint32_t min_instrs = 1;
     uint32_t orig_instr_meter = instr_meter;
+
+    vmst->extramDirty = false;
 
     if (instr_meter < min_instrs) {
         instr_meter = min_instrs;
@@ -319,4 +325,41 @@ uvm32_evt_syscall_buf_t uvm32_getbuf_fixed(uvm32_state_t *vmst, uvm32_evt_t *evt
     }
     return scb;
 }
+
+uint32_t uvm32_extramLoad(void *userdata, uint32_t addr) {
+    uvm32_state_t *vmst = (uvm32_state_t *)userdata;
+    addr -= UVM32_EXTRAM_BASE;
+    if (vmst->extram != UVM32_NULL) {
+        if (addr < vmst->extramLen) {
+            return ((uint32_t *)vmst->extram)[addr / 4];
+        } else {
+            setStatusErr(vmst, UVM32_ERR_MEM_RD);
+        }
+    }
+    return 0;
+}
+
+uint32_t uvm32_extramStore(void *userdata, uint32_t addr, uint32_t val ) {
+    uvm32_state_t *vmst = (uvm32_state_t *)userdata;
+    addr -= UVM32_EXTRAM_BASE;
+    if (vmst->extram != UVM32_NULL) {
+        if (addr < vmst->extramLen) {
+            ((uint32_t *)vmst->extram)[addr / 4] = val;
+            vmst->extramDirty = true;
+        } else {
+            setStatusErr(vmst, UVM32_ERR_MEM_WR);
+        }
+    }
+	return 0;
+}
+
+void uvm32_extram(uvm32_state_t *vmst, uint32_t *ram, uint32_t len) {
+    vmst->extram = ram;
+    vmst->extramLen = len;
+}
+
+bool uvm32_extramDirty(uvm32_state_t *vmst) {
+    return vmst->extramDirty;
+}
+
 

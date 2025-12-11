@@ -55,6 +55,11 @@ typedef struct {
 #define MINIRV32_DECORATE static
 #define MINI_RV32_RAM_SIZE UVM32_MEMORY_SIZE
 #define MINIRV32_POSTEXEC(pc, ir, retval) {if (retval > 0) return retval;}
+uint32_t uvm32_extramLoad(void *userdata, uint32_t addr);
+uint32_t uvm32_extramStore(void *userdata, uint32_t addr, uint32_t val);
+#define MINIRV32_HANDLE_MEM_LOAD_CONTROL( addy, rval ) rval = uvm32_extramLoad(userdata, addy);
+#define MINIRV32_HANDLE_MEM_STORE_CONTROL( addy, val ) if( uvm32_extramStore(userdata, addy, val) ) return val;
+
 #ifndef MINIRV32_IMPLEMENTATION
 #define MINIRV32_STEPPROTO
 #endif
@@ -74,6 +79,9 @@ typedef struct {
     uint8_t memory[UVM32_MEMORY_SIZE];
     uvm32_evt_t ioevt; // for building up in callbacks
     uint8_t *stack_canary;
+    uint32_t extramLen;
+    uint32_t *extram;   // all accesses are 32bit
+    bool extramDirty;
 } uvm32_state_t;
 
 void uvm32_init(uvm32_state_t *vmst);
@@ -93,12 +101,17 @@ typedef enum {
     RET
 } uvm32_arg_t;
 
+// syscall parameter handling
 uint32_t uvm32_getval(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_t);
 const char *uvm32_getcstr(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_t);
 void uvm32_setval(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_t, uint32_t val);
 uvm32_evt_syscall_buf_t uvm32_getbuf(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_t argPtr, uvm32_arg_t argLen);
 uvm32_evt_syscall_buf_t uvm32_getbuf_fixed(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_t argPtr, uint32_t len);
 void uvm32_clearError(uvm32_state_t *vmst);
+
+// external RAM
+void uvm32_extram(uvm32_state_t *vmst, uint32_t *ram, uint32_t len);
+bool uvm32_extramDirty(uvm32_state_t *vmst);    // cleared by uvm32_run()
 
 
 #endif

@@ -3,4 +3,6 @@
 #define UVM32_SYSCALL_YIELD         0x1000001
 #define UVM32_SYSCALL_STACKPROTECT  0x1000002
 
+#define UVM32_EXTRAM_BASE 0x10000000
+
 #include "uvm32_common_custom.h"
