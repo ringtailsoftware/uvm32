@@ -62,6 +62,7 @@ static uint8_t *read_file(const char* filename, int *len) {
         fclose(f);
         return NULL;
     }
+    fclose(f);
 
     *len = file_size;
     return buf;
@@ -119,6 +120,23 @@ void hexdump(const uint8_t *p, int len) {
     }
 }
 
+bool memdump(const char *filename, const uint8_t *buf, int len) {
+    FILE* f = fopen(filename, "wb");
+
+    if (f == NULL) {
+        fprintf(stderr, "error: can't open file '%s'.\n", filename);
+        return false;
+    }
+
+    size_t result = fwrite(buf, sizeof(uint8_t), len, f);
+    if (result != len) {
+        fprintf(stderr, "error: while writing file '%s'\n", filename);
+        return false;
+    }
+    fclose(f);
+    return true;
+}
+
 int main(int argc, char *argv[]) {
     uvm32_state_t vmst;
     uint32_t max_instrs_per_run = 500000;
@@ -174,6 +192,7 @@ int main(int argc, char *argv[]) {
                     uvm32_clearError(&vmst);    // allow to continue
                 } else {
                     isrunning = false;
+                    memdump("host-ram.dump", vmst.memory, UVM32_MEMORY_SIZE);
                 }
             break;
             case UVM32_EVT_SYSCALL:
