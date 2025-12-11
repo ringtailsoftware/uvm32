@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
  * [host](host) vm host which loads a binary and runs to completion, handling multiple syscall types
  * [host-mini](host-mini) minimal vm host (shown above), with baked in bytecode
  * [host-parallel](host-parallel) parallel vm host running multiple vm instances concurrently, with baked in bytecode
- * [host-arduino](host-arduino) vm host as Arduino sketch (tested on Arduino Uno ATmega328P, uses 9950 bytes of flash/1254 bytes RAM)
+ * [host-arduino](host-arduino) vm host as Arduino sketch (`make test` to run AVR code in qemu)
  * [apps/helloworld](apps/helloworld) C hello world program
  * [apps/conio](apps/conio) C console IO demo
  * [apps/lissajous](apps/lissajous) C console lissajous curve (showing softfp, floating point)
@@ -112,7 +112,7 @@ Then, from inside the docker shell
 
 ## Native build
 
-The example VM hosts should all build with any C compiler. To build all of the examples in `apps`, you will need a RISC-V cross compiler, Zig 0.15.2 and Rust (stable).
+The example VM hosts should all build with any C compiler. To build all of the examples in `apps`, you will need a RISC-V cross compiler, Zig 0.15.2 and Rust (stable). To build the example `host-arduino` you will need `arduino-cli`.
 
 ## Quickstart API
 
