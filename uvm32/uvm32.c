@@ -127,7 +127,6 @@ bool get_safeptr_null_terminated(uvm32_state_t *vmst, uint32_t addr, uvm32_evt_s
 }
 
 bool get_safeptr(uvm32_state_t *vmst, uint32_t addr, uint32_t len, uvm32_evt_syscall_buf_t *buf) {
-    uint32_t ptrstart;
     if (MINIRV32_MMIO_RANGE(addr)) {
         if (vmst->extram == NULL) {
             return false;
