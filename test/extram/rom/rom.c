@@ -42,6 +42,25 @@ void main(void) {
             uint16_t *p = (uint16_t *)UVM32_EXTRAM_BASE;
             printdec(p[7]); // short read
         } break;
+        case TEST9: {
+            uint8_t *p = (uint8_t *)UVM32_EXTRAM_BASE;
+            p[0] = 'h';
+            p[1] = 'e';
+            p[2] = 'l';
+            p[3] = 'l';
+            p[4] = 'o';
+            printbuf(p, 5); // try to print from extram (unterminated)
+        } break;
+        case TEST10: {
+            uint8_t *p = (uint8_t *)UVM32_EXTRAM_BASE;
+            p[0] = 'h';
+            p[1] = 'e';
+            p[2] = 'l';
+            p[3] = 'l';
+            p[4] = 'o';
+            p[5] = '\0';
+            println(p); // try to print from extram (terminated)
+        } break;
 
     }
 }

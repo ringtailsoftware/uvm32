@@ -104,26 +104,54 @@ bool uvm32_load(uvm32_state_t *vmst, const uint8_t *rom, int len) {
 
 // Read C-string up to terminator and return len,ptr
 bool get_safeptr_null_terminated(uvm32_state_t *vmst, uint32_t addr, uvm32_evt_syscall_buf_t *buf) {
-    uint32_t ptrstart = addr - MINIRV32_RAM_IMAGE_OFFSET;
-    uint32_t p = ptrstart;
-    if (p >= UVM32_MEMORY_SIZE) {
-        setStatusErr(vmst, UVM32_ERR_MEM_RD);
-        buf->ptr = (uint8_t *)NULL;
-        buf->len = 0;
-        return false;
-    }
-    while(vmst->memory[p] != '\0') {
-        p++;
+    if (MINIRV32_MMIO_RANGE(addr)) {
+        if (vmst->extram == NULL) {
+            return false;
+        } else {
+            
+            uint32_t ptrstart = addr - UVM32_EXTRAM_BASE;;
+            uint32_t p = ptrstart;
+            if (p >= vmst->extramLen) {
+                setStatusErr(vmst, UVM32_ERR_MEM_RD);
+                buf->ptr = (uint8_t *)NULL;
+                buf->len = 0;
+                return false;
+            }
+            while(vmst->memory[p] != '\0') {
+                p++;
+                if (p >= vmst->extramLen) {
+                    setStatusErr(vmst, UVM32_ERR_MEM_RD);
+                    buf->ptr = (uint8_t *)NULL;
+                    buf->len = 0;
+                    return false;
+                }
+            }
+            buf->ptr = (uint8_t *)&vmst->extram[ptrstart/4];    // extram is uint32_t*
+            buf->len = p - ptrstart;
+            return true;
+        }
+    } else {
+        uint32_t ptrstart = addr - MINIRV32_RAM_IMAGE_OFFSET;
+        uint32_t p = ptrstart;
         if (p >= UVM32_MEMORY_SIZE) {
             setStatusErr(vmst, UVM32_ERR_MEM_RD);
             buf->ptr = (uint8_t *)NULL;
             buf->len = 0;
             return false;
         }
+        while(vmst->memory[p] != '\0') {
+            p++;
+            if (p >= UVM32_MEMORY_SIZE) {
+                setStatusErr(vmst, UVM32_ERR_MEM_RD);
+                buf->ptr = (uint8_t *)NULL;
+                buf->len = 0;
+                return false;
+            }
+        }
+        buf->ptr = &vmst->memory[ptrstart];
+        buf->len = p - ptrstart;
+        return true;
     }
-    buf->ptr = &vmst->memory[ptrstart];
-    buf->len = p - ptrstart;
-    return true;
 }
 
 bool get_safeptr(uvm32_state_t *vmst, uint32_t addr, uint32_t len, uvm32_evt_syscall_buf_t *buf) {
