@@ -42,6 +42,11 @@ void syscall_gh_test(void) {
     syscall((uint32_t)SYSCALL_H, (uint32_t)buf, 32);
 }
 
+void syscall_i_test(void) {
+    char *p = "hello";  // runner will overwrite memory
+    syscall((uint32_t)SYSCALL_I, (uint32_t)p, 0);
+}
+
 void main(void) {
     switch(syscall(SYSCALL_PICKTEST, 0, 0)) {
         case SYSCALL_A:
@@ -61,6 +66,9 @@ void main(void) {
         break;
         case SYSCALL_G:
             syscall_gh_test();
+        break;
+        case SYSCALL_I:
+            syscall_i_test();
         break;
 
     }

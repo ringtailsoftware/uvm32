@@ -2,6 +2,7 @@ TOPDIR=../../../
 PROJECT:=$(shell basename ${PWD})
 SRCS=${PROJECT}.c ${TOPDIR}/apps/common/crt0.S
 OPT=-O0
+CFLAGS=-DUVM32_MEMORY_SIZE=16384
 all: all_common
 	@# Convert ROM to C file and header
 	@xxd -i ${PROJECT}.bin > ${PROJECT}-header.c

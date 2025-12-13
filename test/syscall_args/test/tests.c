@@ -169,3 +169,24 @@ void test_syscall_args_buf_pass(void) {
     }
 }
 
+void test_syscall_args_string_never_terminates(void) {
+    // run the vm
+    uvm32_run(&vmst, &evt, 1000);
+    // check for picktest syscall
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_PICKTEST);
+    uvm32_arg_setval(&vmst, &evt, RET, SYSCALL_I);
+
+    uvm32_run(&vmst, &evt, 1000);
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_I);
+    // To ensure c string read goes off end looking for termination...
+    memset(vmst._memory, 0xFF, UVM32_MEMORY_SIZE);
+    TEST_ASSERT_EQUAL(0, strlen(uvm32_arg_getcstr(&vmst, &evt, ARG0)));
+
+    // check for error state
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_ERR);
+    TEST_ASSERT_EQUAL(evt.data.err.errcode, UVM32_ERR_MEM_RD);
+}
+
