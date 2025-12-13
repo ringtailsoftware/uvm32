@@ -142,8 +142,7 @@ bool get_safeptr_null_terminated(uvm32_state_t *vmst, uint32_t addr, uvm32_slice
         if (vmst->_extram == NULL) {
             return false;
         } else {
-            
-            uint32_t ptrstart = addr - UVM32_EXTRAM_BASE;;
+            uint32_t ptrstart = addr - UVM32_EXTRAM_BASE;
             uint32_t p = ptrstart;
             if (p >= vmst->_extramLen) {
                 setStatusErr(vmst, UVM32_ERR_MEM_RD);
@@ -151,7 +150,7 @@ bool get_safeptr_null_terminated(uvm32_state_t *vmst, uint32_t addr, uvm32_slice
                 buf->len = 0;
                 return false;
             }
-            while(vmst->_memory[p] != '\0') {
+            while(vmst->_extram[p] != '\0') {
                 p++;
                 if (p >= vmst->_extramLen) {
                     setStatusErr(vmst, UVM32_ERR_MEM_RD);

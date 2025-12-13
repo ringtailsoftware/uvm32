@@ -61,6 +61,14 @@ void main(void) {
             p[5] = '\0';
             println(p); // try to print from extram (terminated)
         } break;
+        case TEST11: {
+            // pass a string beyond end of ram
+            println((uint32_t)0xFFFFFFFF);
+        } break;
+        case TEST12: {
+            // pass a string beyond end of MMIO region
+            println((uint32_t)UVM32_EXTRAM_BASE + 8);   // extram has been shrunk, this is now out of bounds, or no terminator found
+        } break;
 
     }
 }

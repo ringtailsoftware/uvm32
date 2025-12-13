@@ -217,13 +217,13 @@ void test_extram_buf_terminated(void) {
     // check for picktest syscall
     TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
     TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_PICKTEST);
-    uvm32_arg_setval(&vmst, &evt, RET, TEST9);
+    uvm32_arg_setval(&vmst, &evt, RET, TEST10);
 
     uvm32_run(&vmst, &evt, 100);
     TEST_ASSERT_EQUAL(true, uvm32_extramDirty(&vmst));
     // check for printbuf of val
     TEST_ASSERT_EQUAL(UVM32_EVT_SYSCALL, evt.typ);
-    TEST_ASSERT_EQUAL(evt.data.syscall.code, UVM32_SYSCALL_PRINTBUF);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, UVM32_SYSCALL_PRINTLN);
     const char *str = uvm32_arg_getcstr(&vmst, &evt, ARG0);
     TEST_ASSERT_NOT_EQUAL(NULL, str);
     TEST_ASSERT_EQUAL(0, strcmp(str, "hello"));
@@ -237,16 +237,101 @@ void test_extram_buf_terminated_rugpull(void) {
     // check for picktest syscall
     TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
     TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_PICKTEST);
-    uvm32_arg_setval(&vmst, &evt, RET, TEST9);
+    uvm32_arg_setval(&vmst, &evt, RET, TEST10);
 
     uvm32_run(&vmst, &evt, 100);
     TEST_ASSERT_EQUAL(true, uvm32_extramDirty(&vmst));
     // check for printbuf of val
     TEST_ASSERT_EQUAL(UVM32_EVT_SYSCALL, evt.typ);
-    TEST_ASSERT_EQUAL(evt.data.syscall.code, UVM32_SYSCALL_PRINTBUF);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, UVM32_SYSCALL_PRINTLN);
 
     // remove extram
     uvm32_extram(&vmst, NULL, 0);
+
+    // check that reading from non-existent extram gives empty string and puts into err state
+    const char *str = uvm32_arg_getcstr(&vmst, &evt, ARG0);
+    TEST_ASSERT_EQUAL(0, strlen(str));
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_ERR);
+    TEST_ASSERT_EQUAL(evt.data.err.errcode, UVM32_ERR_MEM_RD);
+}
+
+void test_extram_buf_terminated_beyond_mem_end(void) {
+    // run the vm
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+
+    // check for picktest syscall
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_PICKTEST);
+    uvm32_arg_setval(&vmst, &evt, RET, TEST11);
+
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+    // check for printbuf of val
+    TEST_ASSERT_EQUAL(UVM32_EVT_SYSCALL, evt.typ);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, UVM32_SYSCALL_PRINTLN);
+
+    // check that reading from non-existent extram gives empty string and puts into err state
+    const char *str = uvm32_arg_getcstr(&vmst, &evt, ARG0);
+    TEST_ASSERT_EQUAL(0, strlen(str));
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_ERR);
+    TEST_ASSERT_EQUAL(evt.data.err.errcode, UVM32_ERR_MEM_RD);
+}
+
+void test_extram_buf_terminated_beyond_extram_end_oobstart(void) {
+    // run the vm
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+
+    // check for picktest syscall
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_PICKTEST);
+    uvm32_arg_setval(&vmst, &evt, RET, TEST12);
+
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+    // check for printbuf of val
+    TEST_ASSERT_EQUAL(UVM32_EVT_SYSCALL, evt.typ);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, UVM32_SYSCALL_PRINTLN);
+
+    // replace extram with a tiny one, so read is off the end
+    uint32_t r[1];
+    r[0] = 0xFFFFFFFF; // non zero so string isn't terminated
+    uvm32_extram(&vmst, (uint8_t *)r, 4);
+
+    // check that reading from non-existent extram gives empty string and puts into err state
+    const char *str = uvm32_arg_getcstr(&vmst, &evt, ARG0);
+    TEST_ASSERT_EQUAL(0, strlen(str));
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_ERR);
+    TEST_ASSERT_EQUAL(evt.data.err.errcode, UVM32_ERR_MEM_RD);
+}
+
+void test_extram_buf_terminated_beyond_extram_end(void) {
+    // run the vm
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+
+    // check for picktest syscall
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_PICKTEST);
+    uvm32_arg_setval(&vmst, &evt, RET, TEST12);
+
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+    // check for printbuf of val
+    TEST_ASSERT_EQUAL(UVM32_EVT_SYSCALL, evt.typ);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, UVM32_SYSCALL_PRINTLN);
+
+    // replace extram with a tiny one, so read is off the end
+    uint32_t r[3];
+    // non-zero so string never terminates
+    memset(r, 0xAA, sizeof(r));
+    uvm32_extram(&vmst, (uint8_t *)r, sizeof(r));
+
+    // string starts in valid extram, but no terminator will be found before hitting end of extram
 
     // check that reading from non-existent extram gives empty string and puts into err state
     const char *str = uvm32_arg_getcstr(&vmst, &evt, ARG0);
