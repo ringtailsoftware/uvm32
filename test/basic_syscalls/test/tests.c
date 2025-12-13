@@ -53,6 +53,8 @@ void test_syscalls(void) {
     uvm32_run(&vmst, &evt, 10000);
     TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_END);
     TEST_ASSERT_EQUAL(true, uvm32_hasEnded(&vmst));
+
+    TEST_ASSERT_EQUAL(vmst._memory, uvm32_getMemory(&vmst));
 }
 
 
