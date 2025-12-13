@@ -48,22 +48,24 @@ static uint32_t garbage;
 
 #ifndef UVM32_MEMCPY
 #define UVM32_MEMCPY uvm32_memcpy
-void uvm32_memcpy(void *dst, const void *src, int len) {
+void *uvm32_memcpy(void *dst, const void *src, size_t len) {
     uint8_t *d = (uint8_t *)dst;
     const uint8_t *s = (const uint8_t *)src;
     while(len--) {
         *(d++) = *(s++);
     }
+    return dst;
 }
 #endif
 
 #ifndef UVM32_MEMSET
 #define UVM32_MEMSET uvm32_memset
-void uvm32_memset(void *buf, int c, int len) {
+void *uvm32_memset(void *buf, int c, size_t len) {
     uint8_t *b = (uint8_t *)buf;
     while(len--) {
         *(b++) = c;
     }
+    return buf;
 }
 #endif
 
