@@ -28,4 +28,11 @@ jobs:
           indicators: true
           output: both
           thresholds: '60 80'
+      - name: Make Coverage Badge
+        uses: action-badges/cobertura-coverage-xml-badges@0.4.0
+        with:
+          file-name: coverage.svg
+          badge-branch: badges
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          coverage-file-name: uvm32/test/coverage.xml
 
