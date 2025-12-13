@@ -1,7 +1,7 @@
 .PHONY: test
 
 all:
-	(cd test && make clean)
+	(cd test && make)
 	(cd hosts && make)
 	(cd apps && make)
 
