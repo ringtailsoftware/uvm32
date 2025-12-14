@@ -14,12 +14,17 @@ CLEANCMD = $(foreach TEST,${TESTS},make -C ${TEST} clean &&)
 ifeq (,$(shell which gcovr))
 	GCOVRCMD=echo Install gcovr for code coverage reports
 else
-    GCOVRCMD=gcovr -r ../ --filter ".*uvm32.c" && gcovr -r ../ --filter ".*uvm32.c" --cobertura-pretty --cobertura coverage.xml
+    GCOVRCMD=gcovr -r ../ --filter ".*uvm32.c"
+	PERC=$(shell gcovr -r ../ --filter ".*uvm32.c" | grep uvm | awk '{print $$4}')
 endif
 
 all:
 	${RUNCMD} true
 	@${GCOVRCMD}
+
+ci:
+	@${GCOVRCMD}
+	curl "https://img.shields.io/badge/Code%20Coverage-${PERC}25-success?style=flat" > badge.svg
 
 clean:
 	${CLEANCMD} true

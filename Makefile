@@ -10,6 +10,9 @@ clean:
 	(cd hosts && make clean)
 	(cd apps && make clean)
 
+ci:
+	(cd test && make ci)
+
 test:
 	make -C test
 
@@ -27,5 +30,8 @@ dockershell:
 
 docker:
 	docker run -v `pwd`:/data -w /data --rm uvm32 make
+
+dockerci:
+	docker run -v `pwd`:/data -w /data --rm uvm32 make ci
 
 
