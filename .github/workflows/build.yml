@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: uvm32/test/badge
-          name: badge
+          name: github-pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
