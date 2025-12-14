@@ -20,6 +20,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     environment:
+      if: github.ref == 'refs/heads/main'
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ${{matrix.os}}
