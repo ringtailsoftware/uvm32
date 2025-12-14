@@ -15,6 +15,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: user/app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
   test:
     strategy:
       matrix:
@@ -40,7 +58,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: uvm32/test/badge.svg
-          artifact_name: badge.svg
+          name: badge.svg
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
