@@ -24,7 +24,8 @@ all:
 
 ci:
 	@${GCOVRCMD}
-	curl "https://img.shields.io/badge/Code%20Coverage-${PERC}25-success?style=flat" > badge.svg
+	mkdir -p badge
+	curl "https://img.shields.io/badge/Code%20Coverage-${PERC}25-success?style=flat" > badge/badge.svg
 
 clean:
 	${CLEANCMD} true
