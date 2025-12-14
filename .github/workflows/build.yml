@@ -30,7 +30,7 @@ jobs:
         uses: actions/configure-pages@v4
       - name: Upload Artifact
         if: github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: uvm32/test/badge.svg
       - name: Deploy to GitHub Pages
