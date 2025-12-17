@@ -14,12 +14,13 @@ pub fn build(b: *std.Build) void {
 
     // disable all CPU extensions
     disabled_features.addFeature(@intFromEnum(features.a));
-    disabled_features.addFeature(@intFromEnum(features.c));
+//    disabled_features.addFeature(@intFromEnum(features.c));
     disabled_features.addFeature(@intFromEnum(features.d));
     disabled_features.addFeature(@intFromEnum(features.e));
     disabled_features.addFeature(@intFromEnum(features.f));
     // except multiply
     enabled_features.addFeature(@intFromEnum(features.m));
+    enabled_features.addFeature(@intFromEnum(features.c));
 
     const target = b.resolveTargetQuery(.{ .cpu_arch = Target.Cpu.Arch.riscv32, .os_tag = Target.Os.Tag.freestanding, .abi = Target.Abi.none, .cpu_model = .{ .explicit = &std.Target.riscv.cpu.generic_rv32 }, .cpu_features_sub = disabled_features, .cpu_features_add = enabled_features });
 

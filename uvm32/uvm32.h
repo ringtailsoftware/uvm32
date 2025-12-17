@@ -72,6 +72,17 @@ static uint8_t _uvm32_load1(void *p, uint32_t off);
 static int16_t _uvm32_load2s(void *p, uint32_t off);
 static int8_t _uvm32_load1s(void *p, uint32_t off);
 #endif
+
+#define MINIRV32_COMPRESSED_INSTRUCTIONS
+#ifdef MINIRV32_COMPRESSED_INSTRUCTIONS
+#include <stdio.h>  // FIXME
+#define MINIRV32_ALIGNMENT 1
+#include "rv32c.h"
+#else
+#define MINIRV32_ALIGNMENT 3
+#endif
+
+
 #include "mini-rv32ima.h"
 
 // Define all errors returned in a uvm32_evt_err_t

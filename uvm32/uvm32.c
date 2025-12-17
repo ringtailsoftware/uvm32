@@ -220,6 +220,7 @@ void uvm32_clearError(uvm32_state_t *vmst) {
     }
 }
 
+#include <stdio.h>
 uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) {
     const uint32_t min_instrs = 1;
     uint32_t orig_instr_meter = instr_meter;
@@ -309,6 +310,7 @@ uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) 
                 setup_err_evt(vmst, evt);
             break;
             default:
+printf("EXCEPTION %d\n", ret);
                 // unhandled exception
                 setStatusErr(vmst, UVM32_ERR_INTERNAL_CORE);
                 setup_err_evt(vmst, evt);

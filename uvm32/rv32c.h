@@ -2,6 +2,8 @@
 // down. https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/notebooks/RISCV/RISCV_CARD.pdf
 // This adds -C extension support to mini-rv32ima.
 
+#include <stdio.h>
+
 #define MINIRV32_HANDLE_OTHER_OPCODE																				   \
 	default:																										   \
 	{																												  \
@@ -24,16 +26,43 @@
 						/*printf( "c.addi4spn %08x %d / %d @ %08x\n", REG( 2 ), cimmext, rdid, debugpc );*/							\
 						rval = REG(2) + cimmext;																	   \
 						break;																						 \
-					case 0b010: /*c.lw*/																			   \
-						/*printf( "L %08x -> %08x/%08x\n", pc, REG(((ir>>7)&7)+8), uimm );*/						   \
-						rval = MINIRV32_LOAD4(REG(((ir >> 7) & 7) + 8) + uimm);										\
+					case 0b010: { /*c.lw*/																			   \
+						printf( "L %08x -> %08x/%08x\n", pc, REG(((ir>>7)&7)+8), uimm );						   \
+                        uint32_t addr = (REG(((ir >> 7) & 7) + 8) + uimm) - MINIRV32_RAM_IMAGE_OFFSET; \
+                        if (addr >= MINI_RV32_RAM_SIZE-3) { \
+                            addr += MINIRV32_RAM_IMAGE_OFFSET; \
+                            if (MINIRV32_MMIO_RANGE(addr)) { \
+                                printf("extram load %08x\n", addr); \
+                                rval = _uvm32_extramLoad(userdata, addr, 2); /* 2 = word */ \
+                            } else { \
+                                printf("BAD LOAD ADDR %08x\n", addr); \
+							    trap = (5+1); \
+							    /*rval = rsval; ?? */ \
+                            } \
+                        } else { \
+                            rval = MINIRV32_LOAD4(addr); \
+                        } \
 						rdid = ((ir >> 2) & 7) + 8;																	\
-						break;																						 \
-					case 0b110: /*c.sw*/																			   \
-						/*printf( "S %08x -> %08x/%08x\n", pc, REG(((ir>>7)&7)+8), uimm );*/						   \
-						MINIRV32_STORE4(REG(((ir >> 7) & 7) + 8) + uimm, REG(((ir >> 2) & 7) + 8));					\
+						} break;																						 \
+					case 0b110: { /*c.sw*/																			   \
+						printf( "S %08x -> %08x/%08x\n", pc, REG(((ir>>7)&7)+8), uimm );	   				   \
+                        uint32_t addr = (REG(((ir >> 7) & 7) + 8) + uimm) - MINIRV32_RAM_IMAGE_OFFSET; \
+                        if (addr >= MINI_RV32_RAM_SIZE-3) { \
+                            addr += MINIRV32_RAM_IMAGE_OFFSET; \
+                            if (MINIRV32_MMIO_RANGE(addr)) { \
+                                /*MINIRV32_HANDLE_MEM_STORE_CONTROL(addr - 0x10000000, REG(((ir >> 2) & 7) + 8));*/ \
+                                printf("extram store %08x val=%08x\n", addr, REG(((ir >> 2) & 7) + 8)); \
+                                _uvm32_extramStore(userdata, addr, REG(((ir >> 2) & 7) + 8), 2); /* 2 = word */ \
+                            } else { \
+                                printf("BAD STORE ADDR %08x\n", addr); \
+                                trap = (5+1); \
+                                /*rval = rsval; ?? */ \
+                            } \
+                        } else { \
+						    MINIRV32_STORE4(addr, REG(((ir >> 2) & 7) + 8)); \
+                        } \
 						rdid = 0;																					  \
-						break;																						 \
+						} break;																						 \
 					default:																						   \
                         /* printf( "Unknown Opcode at %08x\n", debugpc ); */                                          \
 						trap = (2 + 1);																				\
@@ -215,14 +244,14 @@
 						rdid = 0;																					  \
 						/*printf( "C.SWSP gp=%08x -> REG(2)=%08x + %08x <<< %08x\n", REG(3), REG(2), (((ir>>7)&3)<<6)  \
 						 * + (((ir>>9)&0xf)<<2), REG(((ir>>2)&0x1f)) ); */											 \
-						MINIRV32_STORE4(REG(2) + (((ir >> 7) & 3) << 6) + (((ir >> 9) & 0xf) << 2),					\
+                         MINIRV32_STORE4((REG(2) + (((ir >> 7) & 3) << 6) + (((ir >> 9) & 0xf) << 2)) - MINIRV32_RAM_IMAGE_OFFSET,   \
 										REG(((ir >> 2) & 0x1f)));													  \
 						break;																						 \
 					case 0b010: /*c.lwsp / c.lw(SP)*/																  \
 						/*printf( "C.LWSP gp=%08x -> REG(2)=%08x + %08x <<< %08x\n", REG(3), REG(2), (((ir>>2)&3)<<6)  \
 						 * + (((ir>>4)&0x7)<<2) + (((ir>>12)&1)<<5), REG(((ir>>2)&0x1f)) );*/						  \
-						rval = MINIRV32_LOAD4(REG(2) + (((ir >> 2) & 3) << 6) + (((ir >> 4) & 0x7) << 2)			   \
-											  + (((ir >> 12) & 1) << 5));											  \
+						rval = MINIRV32_LOAD4((REG(2) + (((ir >> 2) & 3) << 6) + (((ir >> 4) & 0x7) << 2)			   \
+											  + (((ir >> 12) & 1) << 5)) - MINIRV32_RAM_IMAGE_OFFSET);				  \
 						rdid = ((ir >> 7) & 0x1f);																	 \
 						break;																						 \
 					default:																						   \

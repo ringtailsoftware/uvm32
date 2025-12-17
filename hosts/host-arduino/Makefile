@@ -11,6 +11,7 @@ all:
 	cat ${TOPDIR}/uvm32/uvm32.c >> uvm32.cpp
 	cp ${TOPDIR}/uvm32/uvm32.h uvm32.h
 	cp ${TOPDIR}/uvm32/mini-rv32ima.h mini-rv32ima.h
+	cp ${TOPDIR}/uvm32/rv32c.h rv32c.h
 	cp ${TOPDIR}/common/uvm32_common_custom.h uvm32_common_custom.h
 	cp ${TOPDIR}/common/uvm32_sys.h uvm32_sys.h
 	xxd -n mandel -i ${TOPDIR}/precompiled/mandel.bin | sed -e "s/unsigned char/const unsigned char/" > mandel.h

@@ -66,6 +66,14 @@
 	#define MINIRV32_LOAD1_SIGNED( ofs ) *(int8_t*)(image + ofs)
 #endif
 
+#ifndef MINIRV32_HANDLE_OTHER_OPCODE
+	// Fault: Invalid opcode.
+	#define MINIRV32_HANDLE_OTHER_OPCODE \
+		default:						 \
+            printf("*UNHANDLED OPCODE\n"); \
+			trap = (2 + 1);
+#endif
+
 // As a note: We quouple-ify these, because in HLSL, we will be operating with
 // uint4's.  We are going to uint4 data to/from system RAM.
 //
@@ -178,7 +186,7 @@ MINIRV32_STEPPROTO
 			trap = 1 + 1;  // Handle access violation on instruction read.
 			break;
 		}
-		else if( ofs_pc & 3 )
+		else if( ofs_pc & MINIRV32_ALIGNMENT )
 		{
 			trap = 1 + 0;  //Handle PC-misaligned access
 			break;
@@ -510,7 +518,7 @@ MINIRV32_STEPPROTO
 					break;
 				}
 #endif
-				default: trap = (2+1); // Fault: Invalid opcode.
+                MINIRV32_HANDLE_OTHER_OPCODE
 			}
 
 			// If there was a trap, do NOT allow register writeback.
