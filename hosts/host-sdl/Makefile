@@ -10,7 +10,7 @@ CFLAGS += `pkg-config sdl3 --cflags`
 endif
 
 CFLAGS += -Wall -Werror -Wno-gnu-binary-literal
-CFLAGS += -pedantic -std=c99 -O0 -g
+CFLAGS += -O0 -g
 CFLAGS += -DUVM32_ERROR_STRINGS -DUVM32_MEMORY_SIZE=$(shell echo "1024 * 1024 * 8" | bc)
 
 all:
