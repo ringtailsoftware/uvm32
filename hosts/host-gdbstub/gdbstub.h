@@ -143,6 +143,8 @@ struct gdb_state {
   uint8_t signum;
   /* UVM32 state */
   uvm32_state_t* vmst;
+  /* TCP file descriptor */
+  int socket;
   /* User defined callback to handle events */
   uvm32_event_callback_t event_cb;
    /* Will be upated with `vmst->_core' registers */
@@ -151,6 +153,7 @@ struct gdb_state {
 
 int32_t gdb_sys_init_state(struct gdb_state* state,
                            uvm32_state_t* vmst,
+                           int socket,
                            uvm32_event_callback_t event_cb);
 
 #endif /* GDBSTUB_ARCH_UVM32 */
@@ -1722,8 +1725,13 @@ void gdb_sys_init(void)
  */
 int gdb_sys_putchar(struct gdb_state *state, int ch)
 {
-  if (EOF == fputc(ch, stdout)) return GDB_EOF;
-  fflush(stdout);
+  if (0 <= state->socket) {
+    ssize_t sent = send(state->socket, (char*)&ch, 1, 0);
+    return (sent == 0) ? GDB_EOF : 0;
+  } else {
+    if (EOF == fputc(ch, stdout)) return GDB_EOF;
+    fflush(stdout);
+  }
   return 0;
 }
 
@@ -1732,8 +1740,14 @@ int gdb_sys_putchar(struct gdb_state *state, int ch)
  */
 int gdb_sys_getc(struct gdb_state *state)
 {
-  int ch = fgetc(stdin);
-  return (EOF == ch) ? GDB_EOF : ch;
+  if (0 <= state->socket) {
+    uint8_t buffer;
+    ssize_t n = recv(state->socket, &buffer, 1, 0);
+    return (n == 0) ? GDB_EOF : (int)buffer;
+  } else {
+    int ch = fgetc(stdin);
+    return (EOF == ch) ? GDB_EOF : ch;
+  }
 }
 
 /*
@@ -1867,6 +1881,7 @@ void gdb_sys_init(void)
 /* Helper function to init gdb_state */
 int32_t gdb_sys_init_state(struct gdb_state* state,
                            uvm32_state_t* vmst,
+                           int socket,
                            uvm32_event_callback_t event_cb) {
   /* Sanity check argument */
   if ((NULL == state) || (NULL == vmst)) {
@@ -1875,6 +1890,7 @@ int32_t gdb_sys_init_state(struct gdb_state* state,
   memset(state, 0, sizeof(struct gdb_state));
   state->vmst = vmst;
   state->event_cb = event_cb;
+  state->socket = socket;
   /* Update registers */
   memcpy(state->registers,
          vmst->_core.regs,
